@@ -6,4 +6,4 @@ function luasLingkaran($jari) {
 }
 
 $hasil = luasLingkaran(7);
-echo "Luas lingkaran dengan jari-jari 7 = " . $hasil . PHP_EOL;
+echo "Luas lingkaran dengan jari jari 7 = " . $hasil . PHP_EOL;
