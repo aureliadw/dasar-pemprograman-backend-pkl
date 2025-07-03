@@ -1,0 +1,98 @@
+/*selector by id, class, name*/
+
+#judul {
+  color: red;
+}
+.konten {
+  font-size: 16px;
+}
+input[name="email"] {
+  border: 1px solid gray;
+}
+
+/*color*/
+
+h1 {
+  color: blue;
+}
+
+/*background*/
+
+body {
+  background-color: lightblue;
+  background-image: url('bg.jpg');
+  background-size: cover;
+}
+
+/*border*/
+
+p {
+  border: 2px solid black;
+}
+
+/*margin*/
+
+div {
+  margin: 20px;
+}
+
+/*padding*/
+
+div {
+  padding: 15px;
+}
+
+/*height,width*/
+
+img {
+  width: 200px;
+  height: 150px;
+}
+
+/*ukuran ( px, %, em, rem )*/
+
+p {
+  font-size: 1.2em;
+}
+
+/*display*/
+
+span {
+  display: inline;
+}
+div {
+  display: block;
+}
+.container {
+  display: flex;
+}
+
+/*position*/
+
+.box {
+  position: absolute;
+  top: 50px;
+  left: 100px;
+}
+
+/*z-index*/
+
+.box1 {
+  z-index: 1;
+}
+.box2 {
+  z-index: 999;
+}
+
+/*overflow*/
+
+div {
+  overflow: scroll;
+}
+
+/*framework CSS (tailwind)*/
+
+<div class = "bg-blue-500 text-white p-4 rounded-lg">
+  Ini pakai Tailwind
+</div>
+
