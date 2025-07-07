@@ -2,59 +2,55 @@
 
 //Aplikasi pemesanan makanan/minuman
 
- $menu = [
-  "Nasi Goreng" => 15000,
-  "Ayam Bakar" => 12000,
-  "Ayam Goreng" => 13000,
-  "Teh Manis" => 7000,
-  "Es Jeruk" => 7000
-];
+ include 'menu.php';
 
-echo "=== Daftar Menu ===" . PHP_EOL;
+$daftarMenu = array_keys($menu);
+
+function formatRupiah($angka){
+    return "Rp." . number_format($angka, 0,',','.');
+}
+
+while (true){
+echo "    === Daftar Menu ===" . PHP_EOL;
 $no1=1;
 
     foreach($menu as $namaMenu => $harga){
-    echo "$no1. $namaMenu - Rp.". number_format($harga, 0,',','.') . PHP_EOL;
+    $namaMenu = str_pad($namaMenu, 15); 
+    echo "$no1. $namaMenu - " . formatRupiah($harga) . PHP_EOL;
     $no1++;
 }
 
-$inputMenu = readline("Masukkan nama menu yang dibeli:");
-$jumlahPorsi = readline("Masukkan jumlah porsi:");
-$jumlahUang = readline("Masukkan jumlah uang yang dibayar:");
-
-if (array_key_exists($inputMenu, $menu)){
-
-}else{
-    echo "tidak valid, harus yang ada sesuai di menu";
-    exit;
+while (true) {
+    $inputMenu = readline("Pilih menu (angka): ");
+    if (ctype_digit($inputMenu) && $inputMenu >= 1 && $inputMenu <= count($daftarMenu)) {
+        break; // valid
+    }
+    echo "Tidak valid! Pilih angka antara 1 sampai " . count($daftarMenu) . PHP_EOL;
 }
 
-if (is_numeric($jumlahPorsi) && $jumlahPorsi > 0){
-    $jumlahPorsi = (int)$jumlahPorsi;
-}else{
-    if (!is_numeric($jumlahPorsi)) {
-        echo "tidak valid, jumlah harus angka!";
-    } else {
-        echo "tidak valid, jumlah harus lebih besar dari 0!";
+while (true) {
+    $jumlahPorsi = readline("Masukkan jumlah porsi: ");
+    if (ctype_digit($jumlahPorsi) && $jumlahPorsi > 0) {
+        $jumlahPorsi = (int)$jumlahPorsi;
+        break;
     }
-    exit;
+    echo "Jumlah porsi harus bilangan bulat positif!" . PHP_EOL;
 }
 
-if (is_numeric($jumlahUang) && $jumlahUang > 0){
-    $jumlahUang = (int)$jumlahUang;
-}else{
-    if (!is_numeric($jumlahUang)) {
-        echo "tidak valid, jumlah harus angka!";
-    } else {
-        echo "tidak valid, jumlah harus lebih besar dari 0!";
+while (true) {
+    $jumlahUang = readline("Masukkan jumlah uang yang dibayar: ");
+    if (ctype_digit($jumlahUang) && $jumlahUang > 0) {
+        $jumlahUang = (int)$jumlahUang;
+        break;
     }
-    exit;
+    echo "Jumlah uang harus bilangan bulat positif!" . PHP_EOL;
 }
 
 $jumlahPorsi = (int)$jumlahPorsi;
 $jumlahUang = (int)$jumlahUang;
 
-$harga = $menu[$inputMenu];
+$namaMenuDipilih = $daftarMenu[$inputMenu - 1];
+$harga = $menu[$namaMenuDipilih];
 $totalHarga = $harga * $jumlahPorsi;
 
 if  ($jumlahUang < $totalHarga){
@@ -65,9 +61,18 @@ if  ($jumlahUang < $totalHarga){
 $kembalian = $jumlahUang - $totalHarga;
 
 echo "=== Rincian Pemesanan ===" . PHP_EOL;
-echo "Menu          : $inputMenu" . PHP_EOL;
-echo "Harga/porsi   : Rp.". number_format($harga, 0,',','.') . PHP_EOL;
+echo "Menu          : $namaMenuDipilih" . PHP_EOL;
+echo "Harga/porsi   : " . formatRupiah($harga) . PHP_EOL;
 echo "Jumlah Porsi  : $jumlahPorsi" . PHP_EOL;
-echo "Total harga   : Rp " . number_format($totalHarga, 0, ',', '.') . PHP_EOL;
-echo "Uang dibayar  : Rp " . number_format($jumlahUang, 0, ',', '.') . PHP_EOL;
-echo "Kembalian     : Rp " . number_format($kembalian, 0, ',', '.') . PHP_EOL;
+echo "Total harga   : " . formatRupiah($totalHarga) . PHP_EOL;
+echo "Uang dibayar  : " . formatRupiah($jumlahUang) . PHP_EOL;
+echo "Kembalian     : " . formatRupiah($kembalian) . PHP_EOL;
+
+$lanjut = readline("Ingin transaksi lagi? (y/n): ");
+
+if (strtolower($lanjut) == 'n') {
+    echo "Terimakasih! Sampai jumpa." . PHP_EOL;
+    break;
+}
+}
+
