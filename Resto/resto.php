@@ -23,7 +23,7 @@ $no1=1;
 while (true) {
     $inputMenu = readline("Pilih menu (angka): ");
     if (ctype_digit($inputMenu) && $inputMenu >= 1 && $inputMenu <= count($daftarMenu)) {
-        break; // valid
+        break; 
     }
     echo "Tidak valid! Pilih angka antara 1 sampai " . count($daftarMenu) . PHP_EOL;
 }
