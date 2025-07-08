@@ -46,27 +46,47 @@ while (true) {
     echo "Jumlah uang harus bilangan bulat positif!" . PHP_EOL;
 }
 
-$jumlahPorsi = (int)$jumlahPorsi;
-$jumlahUang = (int)$jumlahUang;
+while (true) {
+    $inputDiskon = readline("Masukkan diskon: ");
+    if ($inputDiskon === "") {
+        $diskonPersen = 0;
+        break;
+    }
+    if (ctype_digit($inputDiskon) && (int)$inputDiskon <= 100) {
+        $diskonPersen = (int)$inputDiskon;
+        break;
+    }
+    echo "Diskon maksimum 100%, tidak boleh negatif!" . PHP_EOL;
+}
 
 $namaMenuDipilih = $daftarMenu[$inputMenu - 1];
 $harga = $menu[$namaMenuDipilih];
 $totalHarga = $harga * $jumlahPorsi;
 
-if  ($jumlahUang < $totalHarga){
-    echo "Uang tidak cukup untuk membayar total harga!" . PHP_EOL;
+$diskon = $totalHarga * ($diskonPersen / 100);
+$totalSetelahDiskon = $totalHarga - $diskon;
+
+$ppn = round($totalSetelahDiskon * 0.11);
+$totalBayar =  $totalSetelahDiskon + $ppn;
+
+if  ($jumlahUang < $totalBayar){
+    echo "Maaf, uang yang Anda masukkan belum mencukupi total bayar (termasuk PPN). Silahkan cek kembali." . PHP_EOL;
     exit;
 }
 
-$kembalian = $jumlahUang - $totalHarga;
+$kembalian = $jumlahUang - $totalBayar;
 
 echo "=== Rincian Pemesanan ===" . PHP_EOL;
-echo "Menu          : $namaMenuDipilih" . PHP_EOL;
-echo "Harga/porsi   : " . formatRupiah($harga) . PHP_EOL;
-echo "Jumlah Porsi  : $jumlahPorsi" . PHP_EOL;
-echo "Total harga   : " . formatRupiah($totalHarga) . PHP_EOL;
-echo "Uang dibayar  : " . formatRupiah($jumlahUang) . PHP_EOL;
-echo "Kembalian     : " . formatRupiah($kembalian) . PHP_EOL;
+echo "Menu                  : $namaMenuDipilih" . PHP_EOL;
+echo "Harga/porsi           : " . formatRupiah($harga) . PHP_EOL;
+echo "Jumlah Porsi          : $jumlahPorsi" . PHP_EOL;
+echo "Diskon                : {$diskonPersen}%" . PHP_EOL;
+echo "Total diskon          : " . formatRupiah($diskon) . PHP_EOL;
+echo "Harga setelah diskon  : " . formatRupiah($totalSetelahDiskon) . PHP_EOL;
+echo "PPN (11%)             : " . formatRupiah($ppn) . PHP_EOL;
+echo "Total bayar           : " . formatRupiah($totalBayar) . PHP_EOL;
+echo "Uang dibayar          : " . formatRupiah($jumlahUang) . PHP_EOL;
+echo "Kembalian             : " . formatRupiah($kembalian) . PHP_EOL;
 
 $lanjut = readline("Ingin transaksi lagi? (y/n): ");
 
