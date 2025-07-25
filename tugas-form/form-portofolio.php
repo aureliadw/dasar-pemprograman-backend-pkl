@@ -10,8 +10,7 @@ if ($koneksi->connect_error) {
 }
 
 $pesan = '';
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validasi dan sanitasi input utama
+if ($_SERVER["REQUEST_METHOD"] == "POST") 
     $judul = htmlspecialchars($_POST['judul_portofolio'] ?? '');
     $ringkasan = htmlspecialchars($_POST['ringkasan_portofolio'] ?? '');
     $keahlian = isset($_POST['keahlian']) ? implode(",", array_map('htmlspecialchars', $_POST['keahlian'])) : '';
@@ -26,18 +25,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $terima_klien = isset($_POST['terima_klien']) ? 'ya' : 'tidak';
     $layanan = isset($_POST['layanan']) ? implode(",", array_map('htmlspecialchars', $_POST['layanan'])) : '';
 
-    // Mengambil dan memvalidasi longitude dan latitude
     $longitude = isset($_POST['longitude']) ? floatval($_POST['longitude']) : null;
     $latitude = isset($_POST['latitude']) ? floatval($_POST['latitude']) : null;
 
-    // Validasi rentang longitude dan latitude
     if ($longitude < -180 || $longitude > 180) {
         $pesan = "Error: Longitude harus berada dalam rentang -180 hingga 180.";
     } elseif ($latitude < -90 || $latitude > 90) {
         $pesan = "Error: Latitude harus berada dalam rentang -90 hingga 90.";
     }
 
-    // PROSES ITEM PROYEK DENGAN VALIDASI KETAT
     $items = [];
     if (isset($_POST['judul_item']) && is_array($_POST['judul_item'])) {
         $judul_items = $_POST['judul_item'];
@@ -49,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $deskripsi_item = trim(htmlspecialchars($deskripsi_items[$i]));
             $url_item = trim(filter_var($url_items[$i], FILTER_SANITIZE_URL));
 
-            // Validasi lengkap semua field harus terisi
             if (!empty($judul_item) && !empty($deskripsi_item) && !empty($url_item) && filter_var($url_item, FILTER_VALIDATE_URL)) {
                 $items[] = [
                     'judul' => $judul_item,
@@ -62,8 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     }
-
-    // Hanya lanjut jika tidak ada error
+    
     if (empty($pesan)) {
         $item_json = !empty($items) ? json_encode($items) : NULL;
         
@@ -73,7 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             longitude, latitude, items
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        // Perhatikan tipe data untuk binding parameter
         $stmt->bind_param(
             "ssssssssss",
             $judul, $ringkasan, $keahlian,
