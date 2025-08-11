@@ -20,7 +20,7 @@
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-user-cog"></i>
             <p>
-              Admin
+              CRUD
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
@@ -28,43 +28,43 @@
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="{{ route('admin.pembayaran.index') }}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="nav-icon fas fa-angle-right"></i>
                 <p>Pembayaran</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('admin.pengajuan-penawaran.index') }}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="nav-icon fas fa-angle-right"></i>
                 <p>Pengajuan Penawaran</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('admin.posting-proyek.index') }}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="nav-icon fas fa-angle-right"></i>
                 <p>Posting Proyek</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ route('admin.ulasan.index') }}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="nav-icon fas fa-angle-right"></i>
                 <p>Ulasan</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+              <a href="{{ route('admin.portofolio.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-angle-right"></i>
                 <p>Portofolio</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>CRUD Form 6</p>
+              <a href="{{ route('admin.manajemen-tugas.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-angle-right"></i>
+                <p>Manajemen Tugas</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+                <i class="nav-icon fas fa-angle-right"></i>
                 <p>CRUD Form 7</p>
               </a>
             </li>
