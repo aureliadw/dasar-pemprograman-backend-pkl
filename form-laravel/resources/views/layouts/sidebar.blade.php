@@ -65,7 +65,7 @@
             <li class="nav-item">
               <a href="" class="nav-link">
                 <i class="nav-icon fas fa-angle-right"></i>
-                <p>CRUD Form 7</p>
+                <p>Registrasi</p>
               </a>
             </li>
           </ul>

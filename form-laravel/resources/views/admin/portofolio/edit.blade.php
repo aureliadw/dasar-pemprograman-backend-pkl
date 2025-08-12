@@ -36,7 +36,7 @@
           required
         />
 
-        <x-textarea label="Ringkasan Portofolio (WYSIWYG)" name="ringkasan" rows="6">
+        <x-textarea label="Ringkasan Portofolio" name="ringkasan" rows="6">
           {{ old('ringkasan', $portofolio->ringkasan) }}
         </x-textarea>
 

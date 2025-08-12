@@ -24,8 +24,9 @@ class PortofolioController extends Controller
         return view('admin.portofolio.create');
     }
 
-    public function store(Request $request)
-    {
+public function store(Request $request)
+{
+    try {
         $request->validate([
             'judul' => 'required|string|max:255',
             'ringkasan' => 'required|string',
@@ -45,7 +46,6 @@ class PortofolioController extends Controller
             'warna_tema' => $request->warna_tema,
         ]);
 
-        // Simpan gambar
         if ($request->hasFile('gambar')) {
             foreach ($request->file('gambar') as $file) {
                 $path = $file->store('portofolio_gambar', 'public');
@@ -56,31 +56,35 @@ class PortofolioController extends Controller
             }
         }
 
-        // Simpan item proyek dari JSON
         if ($request->data_proyek) {
             $items = json_decode($request->data_proyek, true);
-            foreach ($items as $item) {
-                PortofolioItem::create([
-                    'portofolio_id' => $portofolio_satu->id,
-                    'judul_proyek' => $item['judul'],
-                    'deskripsi_singkat' => $item['deskripsi'],
-                    'url_proyek' => $item['url'] ?? null,
-                ]);
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    PortofolioItem::create([
+                        'portofolio_id' => $portofolio_satu->id,
+                        'judul_proyek' => $item['judul'],
+                        'deskripsi_singkat' => $item['deskripsi'],
+                        'url_proyek' => $item['url'] ?? null,
+                    ]);
+                }
             }
         }
 
-        // Simpan LPL
         Lpl::create([
             'portofolio_id' => $portofolio_satu->id,
             'longitude' => $request->longitude,
             'latitude' => $request->latitude,
             'terbuka_klien' => $request->has('terbuka'),
-            'layanan' => $request->layanan,
+            'layanan' => $request->layanan ?? [],
             'setuju' => $request->has('setuju'),
         ]);
 
         return redirect()->route('admin.portofolio.index')->with('success', 'Portofolio berhasil disimpan!');
+    } catch (\Exception $e) {
+        Log::error('Gagal menyimpan portofolio: ' . $e->getMessage());
+        return back()->withErrors('Terjadi kesalahan saat menyimpan portofolio: ' . $e->getMessage())->withInput();
     }
+}
 
     public function edit($id)
     {
