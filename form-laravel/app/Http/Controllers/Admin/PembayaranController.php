@@ -8,11 +8,24 @@ use App\Models\Pembayaran;
 
 class PembayaranController extends Controller
 {
-    public function index()
-    {
-        $pembayarans = Pembayaran::all();
-        return view('admin.pembayaran.index', compact('pembayarans'));
+    public function index(Request $request)
+{
+    $sort = $request->get('sort', 'desc');
+    $search = $request->get('search');
+
+    $query = Pembayaran::orderBy('id', $sort);
+
+    if ($search) {
+        $query->where(function($q) use ($search) {
+            $q->where('jumlah_pembayaran', 'like', "%{$search}%")
+              ->orWhere('metode_pembayaran', 'like', "%{$search}%");
+        });
     }
+
+    $pembayarans = $query->paginate(10);
+
+    return view('admin.pembayaran.index', compact('pembayarans', 'sort'));
+}
 
     public function create()
     {
@@ -22,8 +35,9 @@ class PembayaranController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jumlah_pembayaran' => 'required|numeric',
+            'jumlah_pembayaran' => 'required|numeric|min:100',
             'metode_pembayaran' => 'required|string',
+            'setuju_syarat' => 'accepted' 
         ]);
 
         Pembayaran::create([
@@ -46,6 +60,7 @@ class PembayaranController extends Controller
         $request->validate([
             'jumlah_pembayaran' => 'required|numeric',
             'metode_pembayaran' => 'required|string',
+            'setuju_syarat' => 'accepted'
         ]);
 
         $pembayaran = Pembayaran::findOrFail($id);

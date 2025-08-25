@@ -62,12 +62,18 @@
           @enderror
         </div>
 
-        <x-textarea 
-          label="Komentar" 
-          name="komentar" 
-          :required="true" 
-          placeholder="Ceritakan pengalaman anda..." 
-        />
+        <div class="mb-4">
+          <x-textarea 
+            label="Komentar" 
+            name="komentar" 
+            :value="old('komentar')" 
+            :required="true" 
+            placeholder="Ceritakan pengalaman anda..." 
+          />
+          @error('komentar')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+          @enderror
+        </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>
       </form>

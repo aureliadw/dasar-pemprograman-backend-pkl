@@ -1,26 +1,38 @@
 @props([
     'name',
     'label' => null,
-    'id' => $name,
     'options' => [],
-    'selected' => '',
-    'class' => 'form-control'
+    'selected' => null,
+    'multiple' => false,
+    'placeholder' => 'Pilih opsi...'
 ])
 
-<div class="form-group">
-    @if ($label)
-        <label for="{{ $id }}">{{ $label }}</label>
+<div class="mb-3">
+  @if($label)
+    <label for="{{ $name }}" class="form-label">{{ $label }}</label>
+  @endif
+
+  <select
+    name="{{ $name }}{{ $multiple ? '[]' : '' }}"
+    id="{{ $name }}"
+    class="form-select select2"
+    {{ $multiple ? 'multiple' : '' }}
+  >
+    @if(!$multiple && $placeholder)
+      <option value="">{{ $placeholder }}</option>
     @endif
 
-    <select 
-        name="{{ $name }}" 
-        id="{{ $id }}" 
-        {{ $attributes->merge(['class' => $class]) }}
-    >
-        @foreach($options as $key => $optionLabel)
-            <option value="{{ $key }}" {{ $key == old($name, $selected) ? 'selected' : '' }}>
-                {{ $optionLabel }}
-            </option>
-        @endforeach
-    </select>
+    @foreach($options as $value => $text)
+      <option 
+        value="{{ $value }}" 
+        @if($multiple)
+          {{ collect($selected)->contains($value) ? 'selected' : '' }}
+        @else
+          {{ $selected == $value ? 'selected' : '' }}
+        @endif
+      >
+        {{ $text }}
+      </option>
+    @endforeach
+  </select>
 </div>

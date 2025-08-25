@@ -44,7 +44,7 @@ class RegisteredUserController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $profilePicturePath = $request->file('profile_picture')
-                                          ->store('profile_picture', 'public');
+                                          ->store('profile_pictures', 'public');
         }
 
         $user = User::create([

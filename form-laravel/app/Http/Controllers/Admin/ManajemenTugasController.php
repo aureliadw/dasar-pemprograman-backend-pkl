@@ -9,10 +9,21 @@ use App\Models\Portofolio;
 
 class ManajemenTugasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tugas = ManajemenTugas::all();
-        return view('admin.manajemen_tugas.index', compact('tugas'));
+        $sort = $request->get('sort', 'desc');
+        $search = $request->get('search');
+
+        $query = ManajemenTugas::query();
+
+        if ($search) {
+            $query->where('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+        }
+
+        $tugas = $query->orderBy('id', $sort)->paginate(10);
+
+        return view('admin.manajemen_tugas.index', compact('tugas', 'sort'));
     }
 
     public function create()

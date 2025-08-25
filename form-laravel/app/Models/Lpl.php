@@ -4,25 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lpl extends Model
 {
     use HasFactory;
     
     protected $table = 'lpl';
-
     protected $fillable = [
-        'portofolio_id',
-        'longitude',
-        'latitude',
-        'terbuka_klien',
-        'layanan',
-        'setuju',
+        'portofolio_id', 'longitude', 'latitude', 
+        'terbuka_klien', 'layanan', 'setuju'
     ];
 
     protected $casts = [
-        'layanan' => 'array',
+        'layanan' => 'array', // Cast sebagai array
+        'terbuka_klien' => 'boolean',
+        'setuju' => 'boolean',
     ];
+
+    // Biar otomatis decode JSON jadi array
+    public function getLayananAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
 
     public function portofolio()
     {

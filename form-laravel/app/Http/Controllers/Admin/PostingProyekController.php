@@ -5,79 +5,117 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PostingProyek;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PostingProyekController extends Controller
 {
-    public function index() {
-        $data = PostingProyek::all();
-        return view('admin.posting-proyek.index', compact('data'));
+    public function index(Request $request)
+{
+    $query = PostingProyek::query();
+
+    // Search
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('detail_proyek', 'like', "%{$search}%")
+              ->orWhere('deskripsi', 'like', "%{$search}%");
+        });
     }
 
-    public function create() {
+    // Sort
+    $sort = $request->get('sort', 'desc');
+    $query->orderBy('created_at', $sort);
+
+    $data = $query->paginate(10);
+
+    return view('admin.posting-proyek.index', compact('data'));
+}
+
+    public function create()
+    {
         return view('admin.posting-proyek.create');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'detail_proyek' => 'required|string',
-            'deskripsi' => 'required|string',
-            'kategori' => 'required|string',
-            'anggaran' => 'required|numeric',
-            'batas_penawaran' => 'required|date',
-            'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+        $validated = $request->validate([
+            'detail_proyek'     => 'required|string',
+            'deskripsi'         => 'required|string',
+            'kategori'          => 'required|string',
+            'anggaran'          => 'required|numeric',
+            'batas_penawaran'   => 'required|date',
+            'lampiran'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'lokasi_pengerjaan' => 'required|in:remote,onsite',
         ]);
 
-        $data = $request->except('_token');
+        DB::transaction(function () use ($request, $validated) {
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('lampiran', $filename, 'public');
+                $validated['lampiran'] = $filename;
+            }
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('lampiran', $filename, 'public');
-            $data['lampiran'] = $filename;
-        }
+            PostingProyek::create($validated);
+        });
 
-        PostingProyek::create($data);
- 
-        return redirect()->route('admin.posting-proyek.index')->with('success', 'Proyek berhasil diposting!');
+        return redirect()->route('admin.posting-proyek.index')
+            ->with('success', 'Proyek berhasil diposting!');
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $data = PostingProyek::findOrFail($id);
         return view('admin.posting-proyek.edit', compact('data'));
     }
 
-    public function update(Request $request, $id) {
-        $request->validate([
-            'detail_proyek' => 'required|string',
-            'deskripsi' => 'required|string',
-            'kategori' => 'required|string',
-            'anggaran' => 'required|numeric',
-            'batas_penawaran' => 'required|date',
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'detail_proyek'     => 'required|string',
+            'deskripsi'         => 'required|string',
+            'kategori'          => 'required|string',
+            'anggaran'          => 'required|numeric',
+            'batas_penawaran'   => 'required|date',
             'lokasi_pengerjaan' => 'required|in:remote,onsite',
-            'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         $proyek = PostingProyek::findOrFail($id);
+     
+        DB::transaction(function () use ($request, $validated, $proyek) {
+            if ($request->hasFile('lampiran')) {
+                // hapus file lama
+                if ($proyek->lampiran && Storage::disk('public')->exists('lampiran/' . $proyek->lampiran)) {
+                    Storage::disk('public')->delete('lampiran/' . $proyek->lampiran);
+                }
 
-        $data = $request->except('_token');
+                $file = $request->file('lampiran');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('lampiran', $filename, 'public');
+                $validated['lampiran'] = $filename;
+            }
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('lampiran', $filename, 'public');
-            $data['lampiran'] = $filename;
-        }
+            $proyek->update($validated);
+        });
 
-        $proyek->update($data);
-
-        return redirect()->route('admin.posting-proyek.index')->with('success', 'Proyek berhasil diperbarui');
+        return redirect()->route('admin.posting-proyek.index')
+            ->with('success', 'Proyek berhasil diperbarui!');
     }
 
-    public function destroy($id) {
-        $data = PostingProyek::findOrFail($id);
-        $data->delete();
+    public function destroy($id)
+    {
+        $proyek = PostingProyek::findOrFail($id);
+
+        DB::transaction(function () use ($proyek) {
+            // hapus file lampiran juga
+            if ($proyek->lampiran && Storage::disk('public')->exists('lampiran/' . $proyek->lampiran)) {
+                Storage::disk('public')->delete('lampiran/' . $proyek->lampiran);
+            }
+
+            $proyek->delete();
+        });
 
         return back()->with('success', 'Proyek berhasil dihapus');
     }

@@ -8,10 +8,28 @@ use App\Models\PengajuanPenawaran;
 
 class PengajuanPenawaranController extends Controller
 {
-    public function index()
+      public function index(Request $request)
     {
-        $pengajuans = PengajuanPenawaran::all();
-        return view('admin.pengajuan-penawaran.index', compact('pengajuans'));
+        $search = $request->get('search'); // keyword search
+        $sort = $request->get('sort', 'desc'); // default descending
+
+        // Query builder
+        $query = PengajuanPenawaran::query();
+
+        // Jika ada keyword search
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('jumlah_penawaran', 'like', "%{$search}%")
+                  ->orWhere('pesan', 'like', "%{$search}%");
+            });
+        }
+
+        // Urutkan berdasarkan id
+        $pengajuans = $query->orderBy('id', $sort)
+                            ->paginate(10) // 10 data per halaman
+                            ->withQueryString(); // supaya query string tetap ada saat pagination
+
+        return view('admin.pengajuan-penawaran.index', compact('pengajuans', 'sort'));
     }
 
     public function create()

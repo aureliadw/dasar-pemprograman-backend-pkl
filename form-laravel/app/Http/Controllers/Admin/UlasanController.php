@@ -8,10 +8,22 @@ use App\Models\Ulasan;
 
 class UlasanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $ulasan = Ulasan::oldest()->get();
-        return view('admin.ulasan.index', compact('ulasan'));
+        $sort = $request->get('sort', 'desc'); // default descending
+        $search = $request->get('search');
+
+        $query = Ulasan::query();
+
+        // Fitur search (komentar)
+        if ($search) {
+            $query->where('komentar', 'like', "%{$search}%");
+        }
+
+        // Urutkan berdasarkan id
+        $ulasan = $query->orderBy('id', $sort)->paginate(10); // 10 per halaman
+
+        return view('admin.ulasan.index', compact('ulasan', 'sort'));
     }
 
     public function create()
