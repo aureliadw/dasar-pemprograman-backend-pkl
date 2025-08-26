@@ -20,7 +20,6 @@ class PortofolioGambar1Factory extends Factory
 
     public function definition()
     {
-        // Simpan dummy.png di public/uploads/portofolio
         $dummyPath = public_path('dummy.png');
         $filename = Str::slug($this->faker->words(2, true)) . '-' . uniqid() . '.png';
         Storage::disk('public')->put(

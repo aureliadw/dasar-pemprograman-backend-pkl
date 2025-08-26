@@ -17,15 +17,12 @@ class PortofolioSeeder extends Seeder
     public function run()
     {
         PortofolioSatu::factory(10)->create()->each(function($portofolio){
-            // 1–3 item
             $items = PortofolioItem::factory(rand(1,3))->make();
             $portofolio->items()->saveMany($items);
 
-            // 1–3 gambar
             $images = PortofolioGambar1::factory(rand(1,3))->make();
             $portofolio->gambar()->saveMany($images);
 
-            // lpl
             $lpl = Lpl::factory()->make();
             $portofolio->lpl()->save($lpl);
         });

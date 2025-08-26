@@ -33,7 +33,6 @@ class PostingProyekController extends Controller
         });
     }
 
-    // Sort
     $sort = $request->get('sort', 'desc');
     $query->orderBy('created_at', $sort);
 
@@ -96,7 +95,6 @@ class PostingProyekController extends Controller
      
         DB::transaction(function () use ($request, $validated, $proyek) {
             if ($request->hasFile('lampiran')) {
-                // hapus file lama
                 if ($proyek->lampiran && Storage::disk('public')->exists('lampiran/' . $proyek->lampiran)) {
                     Storage::disk('public')->delete('lampiran/' . $proyek->lampiran);
                 }
@@ -119,7 +117,6 @@ class PostingProyekController extends Controller
         $proyek = PostingProyek::findOrFail($id);
 
         DB::transaction(function () use ($proyek) {
-            // hapus file lampiran juga
             if ($proyek->lampiran && Storage::disk('public')->exists('lampiran/' . $proyek->lampiran)) {
                 Storage::disk('public')->delete('lampiran/' . $proyek->lampiran);
             }

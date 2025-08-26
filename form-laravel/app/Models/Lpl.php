@@ -17,12 +17,11 @@ class Lpl extends Model
     ];
 
     protected $casts = [
-        'layanan' => 'array', // Cast sebagai array
+        'layanan' => 'array', 
         'terbuka_klien' => 'boolean',
         'setuju' => 'boolean',
     ];
 
-    // Biar otomatis decode JSON jadi array
     public function getLayananAttribute($value)
     {
         return $value ? json_decode($value, true) : [];

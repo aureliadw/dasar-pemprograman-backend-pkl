@@ -14,13 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // Penting: role & permission dulu
         $this->call([
             RolePermissionSeeder::class,
             UserSeeder::class,
         ]);
 
-        // Seeder lain bisa jalan setelah user
         $this->call([
             PembayaranSeeder::class,
             PenawaranSeeder::class,

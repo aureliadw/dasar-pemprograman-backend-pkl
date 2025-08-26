@@ -23,10 +23,8 @@ class PengajuanPenawaranController extends Controller
         $search = $request->get('search'); // keyword search
         $sort = $request->get('sort', 'desc'); // default descending
 
-        // Query builder
         $query = PengajuanPenawaran::query();
 
-        // Jika ada keyword search
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('jumlah_penawaran', 'like', "%{$search}%")
@@ -34,7 +32,6 @@ class PengajuanPenawaranController extends Controller
             });
         }
 
-        // Urutkan berdasarkan id
         $pengajuans = $query->orderBy('id', $sort)
                             ->paginate(10) // 10 data per halaman
                             ->withQueryString(); // supaya query string tetap ada saat pagination
