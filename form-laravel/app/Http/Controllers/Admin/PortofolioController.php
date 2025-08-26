@@ -14,13 +14,22 @@ use Illuminate\Support\Facades\DB;
 
 class PortofolioController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('permission:view_portofolio')->only(['index', 'show']);
+        $this->middleware('permission:create_portofolio')->only(['create', 'store']);
+        $this->middleware('permission:edit_portofolio')->only(['edit', 'update']);
+        $this->middleware('permission:delete_portofolio')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $sort = $request->get('sort', 'id_desc');
+        $sort   = $request->get('sort', 'id_desc');
 
         $portofolio_satu = PortofolioSatu::query()
-            ->when($search, function($query, $search) {
+            ->when($search, function ($query, $search) {
                 $query->where('judul_portofolio', 'like', "%{$search}%")
                       ->orWhere('keahlian', 'like', "%{$search}%");
             })
@@ -76,16 +85,15 @@ class PortofolioController extends Controller
             }
 
             if ($request->filled('data_proyek')) {
-    $items = json_decode($request->data_proyek, true) ?? [];
-
-    foreach ($items as $item) {
-        $portofolio->items()->create([
-            'judul_proyek'      => $item['judul'] ?? '',
-            'deskripsi_singkat' => $item['deskripsi'] ?? '',
-            'url_proyek'        => $item['url'] ?? null,
-        ]);
-    }
-}
+                $items = json_decode($request->data_proyek, true) ?? [];
+                foreach ($items as $item) {
+                    $portofolio->items()->create([
+                        'judul_proyek'      => $item['judul'] ?? '',
+                        'deskripsi_singkat' => $item['deskripsi'] ?? '',
+                        'url_proyek'        => $item['url'] ?? null,
+                    ]);
+                }
+            }
 
             $portofolio->lpl()->create([
                 'longitude'     => $request->longitude,
@@ -103,7 +111,7 @@ class PortofolioController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()
-                ->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 
@@ -114,90 +122,85 @@ class PortofolioController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    $portofolio = PortofolioSatu::findOrFail($id);
+    {
+        $portofolio = PortofolioSatu::findOrFail($id);
 
-    $request->validate([
-        'judul'      => 'required|string|max:255',
-        'ringkasan'  => 'required|string',
-        'keahlian'   => 'required|array|min:1',
-        'warna_tema' => 'required|string|max:7',
-        'gambar.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-        'longitude'  => 'required|numeric',
-        'latitude'   => 'required|numeric',
-        'setuju'     => 'accepted',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        // Update data utama
-        $portofolio->update([
-            'judul_portofolio' => $request->judul,
-            'ringkasan'        => $request->ringkasan,
-            'keahlian'         => implode(', ', $request->keahlian ?? []),
-            'warna_tema'       => $request->warna_tema,
+        $request->validate([
+            'judul'      => 'required|string|max:255',
+            'ringkasan'  => 'required|string',
+            'keahlian'   => 'required|array|min:1',
+            'warna_tema' => 'required|string|max:7',
+            'gambar.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'longitude'  => 'required|numeric',
+            'latitude'   => 'required|numeric',
+            'setuju'     => 'accepted',
         ]);
 
-        // Update gambar
-        if ($request->hasFile('gambar')) {
-            foreach ($portofolio->gambar as $gambarLama) {
-                Storage::disk('public')->delete($gambarLama->file_path);
-                $gambarLama->delete();
+        DB::beginTransaction();
+
+        try {
+            $portofolio->update([
+                'judul_portofolio' => $request->judul,
+                'ringkasan'        => $request->ringkasan,
+                'keahlian'         => implode(', ', $request->keahlian ?? []),
+                'warna_tema'       => $request->warna_tema,
+            ]);
+
+            if ($request->hasFile('gambar')) {
+                foreach ($portofolio->gambar as $gambarLama) {
+                    Storage::disk('public')->delete($gambarLama->file_path);
+                    $gambarLama->delete();
+                }
+
+                foreach ($request->file('gambar') as $file) {
+                    $path = $file->store('portofolio_gambar', 'public');
+                    $portofolio->gambar()->create([
+                        'file_path' => $path,
+                    ]);
+                }
             }
 
-            foreach ($request->file('gambar') as $file) {
-                $path = $file->store('portofolio_gambar', 'public');
-                $portofolio->gambar()->create([
-                    'file_path' => $path,
+            if ($request->data_proyek) {
+                $portofolio->items()->delete();
+                $items = json_decode($request->data_proyek, true) ?? [];
+                foreach ($items as $item) {
+                    $portofolio->items()->create([
+                        'judul_proyek'      => $item['judul'],
+                        'deskripsi_singkat' => $item['deskripsi'],
+                        'url_proyek'        => $item['url'] ?? null,
+                    ]);
+                }
+            }
+
+            if ($portofolio->lpl) {
+                $portofolio->lpl->update([
+                    'longitude'     => $request->longitude,
+                    'latitude'      => $request->latitude,
+                    'terbuka_klien' => $request->has('terbuka'),
+                    'layanan'       => json_encode($request->layanan ?? []),
+                    'setuju'        => true,
+                ]);
+            } else {
+                $portofolio->lpl()->create([
+                    'longitude'     => $request->longitude,
+                    'latitude'      => $request->latitude,
+                    'terbuka_klien' => $request->has('terbuka'),
+                    'layanan'       => json_encode($request->layanan ?? []),
+                    'setuju'        => true,
                 ]);
             }
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.portofolio.index')
+                ->with('success', 'Portofolio berhasil diperbarui!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
-
-        // Update item proyek
-        if ($request->data_proyek) {
-    $portofolio->items()->delete();
-
-    $items = json_decode($request->data_proyek, true) ?? [];
-    foreach ($items as $item) {
-        $portofolio->items()->create([
-            'judul_proyek'      => $item['judul'],
-            'deskripsi_singkat' => $item['deskripsi'],
-            'url_proyek'        => $item['url'] ?? null,
-        ]);
     }
-}
-
-        // Update lokasi & layanan
-        if ($portofolio->lpl) {
-            $portofolio->lpl->update([
-                'longitude'     => $request->longitude,
-                'latitude'      => $request->latitude,
-                'terbuka_klien' => $request->has('terbuka'),
-                'layanan'       => json_encode($request->layanan ?? []),
-                'setuju'        => true,
-            ]);
-        } else {
-            $portofolio->lpl()->create([
-                'longitude'     => $request->longitude,
-                'latitude'      => $request->latitude,
-                'terbuka_klien' => $request->has('terbuka'),
-                'layanan'       => json_encode($request->layanan ?? []),
-                'setuju'        => true,
-            ]);
-        }
-
-        DB::commit();
-
-        return redirect()
-            ->route('admin.portofolio.index')
-            ->with('success', 'Portofolio berhasil diperbarui!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->withInput()
-            ->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
-    }
-}
 
     public function destroy($id)
     {

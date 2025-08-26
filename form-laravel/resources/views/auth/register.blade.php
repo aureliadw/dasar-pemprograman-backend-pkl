@@ -46,12 +46,12 @@
             <label class="block font-medium mb-2">Tipe Pengguna</label>
             <div class="flex gap-4">
                 <label class="flex items-center gap-2">
-                    <input type="radio" name="role" value="klien" {{ old('role') == 'klien' ? 'checked' : '' }} required>
-                    Klien
+                    <input type="radio" name="role" value="user" {{ old('role') == 'user' ? 'checked' : '' }} required>
+                    User
                 </label>
                 <label class="flex items-center gap-2">
-                    <input type="radio" name="role" value="freelancer" {{ old('role') == 'freelancer' ? 'checked' : '' }}>
-                    Freelancer
+                    <input type="radio" name="role" value="admin" {{ old('role') == 'admin' ? 'checked' : '' }}>
+                    Admin
                 </label>
             </div>
         </div>

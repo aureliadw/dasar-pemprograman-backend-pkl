@@ -37,17 +37,13 @@ class UserController extends Controller
 
         $data = $request->only(['name', 'email', 'phone', 'bio', 'role']);
 
-        // Kalau upload profile_picture baru
         if ($request->hasFile('profile_picture')) {
-            // Hapus foto lama jika ada
             if ($user->profile_picture && Storage::exists('public/' . $user->profile_picture)) {
                 Storage::delete('public/' . $user->profile_picture);
             }
 
-            // Simpan foto baru
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
 
-            // Simpan path ke database
             $data['profile_picture'] = $path;
         }
 

@@ -34,8 +34,8 @@ class RegisteredUserController extends Controller
             'name'             => ['required', 'string', 'max:255'],
             'email'            => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password'         => ['required', 'confirmed', Rules\Password::defaults()],
-            'role'             => ['nullable', 'string', 'max:50'],
-            'phone'            => ['nullable', 'string', 'max:20'],
+            'tipe_pengguna'    => ['nullable', 'in:user,admin'],
+            'telepon'          => ['nullable', 'string', 'max:20'],
             'bio'              => ['nullable', 'string', 'max:500'],
             'profile_picture'  => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
@@ -51,12 +51,13 @@ class RegisteredUserController extends Controller
             'name'            => $request->name,
             'email'           => $request->email,
             'password'        => Hash::make($request->password),
-            'role'            => $request->role,
-            'phone'           => $request->phone,
+            'tipe_pengguna'   => $request->tipe_pengguna,
+            'telepon'         => $request->telepon,
             'bio'             => $request->bio,
             'profile_picture' => $profilePicturePath,
         ]);
 
+        $user->assignRole('User');
         event(new Registered($user));
 
         Auth::login($user);

@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Storage;
 
 class PostingProyekController extends Controller
 {
+    public function __construct()
+    {
+     $this->middleware('auth');
+
+        $this->middleware('permission:view_posting-proyek')->only(['index', 'show']);
+        $this->middleware('permission:create_posting-proyek')->only(['create', 'store']);
+        $this->middleware('permission:edit_posting-proyek')->only(['edit', 'update']);
+        $this->middleware('permission:delete_posting-proyek')->only(['destroy']);
+    }
+
     public function index(Request $request)
 {
     $query = PostingProyek::query();

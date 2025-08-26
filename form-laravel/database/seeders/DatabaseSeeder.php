@@ -14,19 +14,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        // Penting: role & permission dulu
         $this->call([
-        PembayaranSeeder::class,
-        PenawaranSeeder::class,
-        PostingProyekSeeder::class,
-        UlasanSeeder::class,
-        
+            RolePermissionSeeder::class,
+            UserSeeder::class,
         ]);
-        $this->call(UserSeeder::class);
-        
-        $this->call(PenawaranSeeder::class);
-        $this->call(PostingProyekSeeder::class);
-        $this->call(UlasanSeeder::class);
-        $this->call(PortofolioSeeder::class);
-        $this->call(ManajemenSeeder::class);
+
+        // Seeder lain bisa jalan setelah user
+        $this->call([
+            PembayaranSeeder::class,
+            PenawaranSeeder::class,
+            PostingProyekSeeder::class,
+            UlasanSeeder::class,
+            PortofolioSeeder::class,
+            ManajemenSeeder::class,
+        ]);
     }
 }

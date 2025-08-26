@@ -50,27 +50,27 @@
 
     /* ==== Select2 Multiple (Tags) ==== */
     .select2-container--default .select2-selection--multiple {
-  min-height: 38px; /* biar sama tinggi dengan input bootstrap */
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 4px 6px;
-  font-size: 14px;
-}
+      min-height: 38px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 4px 6px;
+      font-size: 14px;
+    }
     /* Chip/tag style */
     .select2-container--default .select2-selection--multiple .select2-selection__choice {
-  background-color: #007bff;
-  border: none;
-  color: #fff;
-  border-radius: 20px;
-  padding: 4px 10px;
-  margin: 3px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-}
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      border-radius: 20px;
+      padding: 4px 10px;
+      margin: 3px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+    }
 
     /* Tombol X */
     .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
@@ -87,7 +87,6 @@
       background-color: #007bff;
       color: #fff;
     }
-    
   </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -95,6 +94,20 @@
 
   {{-- Sidebar --}}
   @include('layouts.sidebar') 
+
+  {{-- Navbar Logout --}}
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <form method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </form>
+      </li>
+    </ul>
+  </nav>
 
   {{-- Content --}}
   <div class="content-wrapper">

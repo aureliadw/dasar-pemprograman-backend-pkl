@@ -8,20 +8,28 @@ use App\Models\Ulasan;
 
 class UlasanController extends Controller
 {
+    public function __construct()
+    {
+     $this->middleware('auth');
+
+        $this->middleware('permission:view_ulasan')->only(['index', 'show']);
+        $this->middleware('permission:create_ulasan')->only(['create', 'store']);
+        $this->middleware('permission:edit_ulasan')->only(['edit', 'update']);
+        $this->middleware('permission:delete_ulasan')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
-        $sort = $request->get('sort', 'desc'); // default descending
+        $sort = $request->get('sort', 'desc'); 
         $search = $request->get('search');
 
         $query = Ulasan::query();
 
-        // Fitur search (komentar)
         if ($search) {
             $query->where('komentar', 'like', "%{$search}%");
         }
 
-        // Urutkan berdasarkan id
-        $ulasan = $query->orderBy('id', $sort)->paginate(10); // 10 per halaman
+        $ulasan = $query->orderBy('id', $sort)->paginate(10); 
 
         return view('admin.ulasan.index', compact('ulasan', 'sort'));
     }

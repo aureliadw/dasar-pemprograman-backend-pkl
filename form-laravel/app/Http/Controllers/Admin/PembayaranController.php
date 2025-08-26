@@ -8,24 +8,32 @@ use App\Models\Pembayaran;
 
 class PembayaranController extends Controller
 {
-    public function index(Request $request)
-{
-    $sort = $request->get('sort', 'desc');
-    $search = $request->get('search');
-
-    $query = Pembayaran::orderBy('id', $sort);
-
-    if ($search) {
-        $query->where(function($q) use ($search) {
-            $q->where('jumlah_pembayaran', 'like', "%{$search}%")
-              ->orWhere('metode_pembayaran', 'like', "%{$search}%");
-        });
+    public function __construct()
+    {
+        $this->middleware('permission:view_pembayaran')->only(['index']);
+        $this->middleware('permission:create_pembayaran')->only(['create', 'store']);
+        $this->middleware('permission:edit_pembayaran')->only(['edit', 'update']);
+        $this->middleware('permission:delete_pembayaran')->only(['destroy']);
     }
 
-    $pembayarans = $query->paginate(10);
+    public function index(Request $request)
+    {
+        $sort = $request->get('sort', 'desc');
+        $search = $request->get('search');
 
-    return view('admin.pembayaran.index', compact('pembayarans', 'sort'));
-}
+        $query = Pembayaran::orderBy('id', $sort);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('jumlah_pembayaran', 'like', "%{$search}%")
+                  ->orWhere('metode_pembayaran', 'like', "%{$search}%");
+            });
+        }
+
+        $pembayarans = $query->paginate(10);
+
+        return view('admin.pembayaran.index', compact('pembayarans', 'sort'));
+    }
 
     public function create()
     {
@@ -37,13 +45,13 @@ class PembayaranController extends Controller
         $request->validate([
             'jumlah_pembayaran' => 'required|numeric|min:100',
             'metode_pembayaran' => 'required|string',
-            'setuju_syarat' => 'accepted' 
+            'setuju_syarat'     => 'accepted'
         ]);
 
         Pembayaran::create([
             'jumlah_pembayaran' => $request->jumlah_pembayaran,
             'metode_pembayaran' => $request->metode_pembayaran,
-            'setuju_syarat' => $request->has('setuju_syarat') ? 1 : 0,
+            'setuju_syarat'     => $request->has('setuju_syarat') ? 1 : 0,
         ]);
 
         return redirect()->route('admin.pembayaran.index')->with('success', 'Data berhasil ditambahkan!');
@@ -58,16 +66,16 @@ class PembayaranController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'jumlah_pembayaran' => 'required|numeric',
+            'jumlah_pembayaran' => 'required|numeric|min:100',
             'metode_pembayaran' => 'required|string',
-            'setuju_syarat' => 'accepted'
+            'setuju_syarat'     => 'accepted'
         ]);
 
         $pembayaran = Pembayaran::findOrFail($id);
         $pembayaran->update([
             'jumlah_pembayaran' => $request->jumlah_pembayaran,
             'metode_pembayaran' => $request->metode_pembayaran,
-            'setuju_syarat' => $request->has('setuju_syarat') ? 1 : 0,
+            'setuju_syarat'     => $request->has('setuju_syarat') ? 1 : 0,
         ]);
 
         return redirect()->route('admin.pembayaran.index')->with('success', 'Data berhasil diupdate!');

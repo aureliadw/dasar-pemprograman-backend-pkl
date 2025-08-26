@@ -14,7 +14,7 @@
     </div>
 
     <div class="card-body">
-      <form action="{{ route('admin.pengajuan-penawaran.store') }}" method="POST">
+      <form action="{{ route('admin.pengajuan.store') }}" method="POST">
         @csrf
 
         {{-- Jumlah Penawaran --}}

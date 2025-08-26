@@ -8,6 +8,16 @@ use App\Models\PengajuanPenawaran;
 
 class PengajuanPenawaranController extends Controller
 {
+    public function __construct()
+    {
+     $this->middleware('auth');
+
+        $this->middleware('permission:view_pengajuan')->only(['index', 'show']);
+        $this->middleware('permission:create_pengajuan')->only(['create', 'store']);
+        $this->middleware('permission:edit_pengajuan')->only(['edit', 'update']);
+        $this->middleware('permission:delete_pengajuan')->only(['destroy']);
+    }
+
       public function index(Request $request)
     {
         $search = $request->get('search'); // keyword search
@@ -51,7 +61,7 @@ class PengajuanPenawaranController extends Controller
             'durasi_pengerjaan' => $request->durasi_pengerjaan,
         ]);
 
-        return redirect()->route('admin.pengajuan-penawaran.index')->with('success', 'Data berhasil ditambahkan!');
+        return redirect()->route('admin.pengajuan.index')->with('success', 'Data berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -75,7 +85,7 @@ class PengajuanPenawaranController extends Controller
             'durasi_pengerjaan' => $request->durasi_pengerjaan,
         ]);
 
-        return redirect()->route('admin.pengajuan-penawaran.index')->with('success', 'Data berhasil diupdate!');
+        return redirect()->route('admin.pengajuan.index')->with('success', 'Data berhasil diupdate!');
     }
 
     public function destroy($id)
@@ -83,6 +93,6 @@ class PengajuanPenawaranController extends Controller
         $pengajuan = PengajuanPenawaran::findOrFail($id);
         $pengajuan->delete();
 
-        return redirect()->route('admin.pengajuan-penawaran.index')->with('success', 'Data berhasil dihapus!');
+        return redirect()->route('admin.pengajuan.index')->with('success', 'Data berhasil dihapus!');
     }
 }

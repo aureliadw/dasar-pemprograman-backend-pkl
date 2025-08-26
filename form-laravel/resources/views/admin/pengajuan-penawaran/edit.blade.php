@@ -4,7 +4,7 @@
 <div class="container">
     <h3>Edit Penawaran</h3>
 
-    <form action="{{ route('admin.pengajuan-penawaran.update', $pengajuan->id) }}" method="POST">
+    <form action="{{ route('admin.pengajuan.update', $pengajuan->id) }}" method="POST">
         @csrf
         @method('PUT')
 

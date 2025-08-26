@@ -33,7 +33,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('admin.pengajuan-penawaran.index') }}" class="nav-link">
+              <a href="{{ route('admin.pengajuan.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-angle-right"></i>
                 <p>Pengajuan Penawaran</p>
               </a>
@@ -68,6 +68,23 @@
                 <p>Registrasi</p>
               </a>
             </li>
+
+             {{-- Tampilkan khusus admin --}}
+            @role('admin')
+              <li class="nav-item">
+                <a href="{{ route('roles.index') }}" class="nav-link">
+                  <i class="nav-icon fas fa-lock"></i>
+                  <p>Manajemen Role</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('permissions.index') }}" class="nav-link">
+                  <i class="nav-icon fas fa-key"></i>
+                  <p>Manajemen Permission</p>
+                </a>
+              </li>
+            @endrole
+            
           </ul>
         </li>
 

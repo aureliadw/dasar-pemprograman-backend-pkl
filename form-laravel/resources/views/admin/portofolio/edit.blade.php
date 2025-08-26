@@ -168,7 +168,6 @@ $(function() {
     });
 });
 
-// Preload items proyek
 let proyekList = @json($portofolio->items->map(fn($item) => [
     'judul' => $item->judul_proyek,
     'deskripsi' => $item->deskripsi_singkat,
