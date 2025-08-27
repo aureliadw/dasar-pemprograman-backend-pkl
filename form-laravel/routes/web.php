@@ -117,9 +117,6 @@ Route::middleware(['auth'])->group(function () {
         'destroy' => 'admin.manajemen-tugas.destroy',
     ]);
 
-    // ---------------- Permission (opsional, untuk superadmin) ----------------
-    Route::resource('permissions', PermissionController::class);
-
     // ---------------- Roles (khusus admin/superadmin) ----------------
     Route::resource('roles', RoleController::class)->names([
         'index'   => 'roles.index',
