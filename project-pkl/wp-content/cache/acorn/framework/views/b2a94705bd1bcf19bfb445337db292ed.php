@@ -7,6 +7,7 @@
   <?php (do_action('get_header')); ?>
   <?php (wp_head()); ?>
   <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+  <link href="https://www.fontshare.com/fonts/plus-jakarta-sans" rel="stylesheet">
 </head>
 
 <body <?php (body_class()); ?>>
@@ -32,7 +33,7 @@
 
     </a>
 
-    <?php echo $__env->make('sections.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
 
     <main id="main" class="bg-primary mx-auto w-full max-w-screen-xl px-4 md:py-12">
       <?php echo $__env->yieldContent('content'); ?>
